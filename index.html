@@ -1,0 +1,259 @@
+import React, { useState } from 'react';
+import { Calendar, Package, Truck, CheckCircle, XCircle, Filter } from 'lucide-react';
+
+const AnimalSchedule = () => {
+  const [selectedStore, setSelectedStore] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState(null);
+
+  const scheduleData = [
+    {
+      store: 658,
+      storeName: 'Issaquah',
+      day: 'Monday',
+      delivery: 'Last Friday',
+      orderStatus: 'N/A - Do not write order',
+      icon: '🐱',
+      color: 'from-amber-500 to-orange-600',
+      borderColor: 'border-amber-500',
+      bgColor: 'bg-amber-50',
+      shouldOrder: false,
+      trackingUrl: null
+    },
+    {
+      store: 391,
+      storeName: 'Kirkland',
+      day: 'Monday',
+      delivery: 'Today/Monday',
+      orderStatus: 'Tomorrow/Tuesday',
+      icon: '🐕',
+      color: 'from-slate-500 to-slate-700',
+      borderColor: 'border-slate-500',
+      bgColor: 'bg-slate-50',
+      shouldOrder: true,
+      trackingUrl: 'https://cloud.samsara.com/o/61699/fleet/viewer/MAUsiZxRxiWYDPgVVPh8'
+    },
+    {
+      store: 23,
+      storeName: 'Bellevue',
+      day: 'Tuesday',
+      delivery: 'Last Thursday/Load Already Thrown',
+      orderStatus: 'Tomorrow/Wednesday',
+      icon: '🦦',
+      color: 'from-orange-500 to-red-600',
+      borderColor: 'border-orange-500',
+      bgColor: 'bg-orange-50',
+      shouldOrder: true,
+      trackingUrl: null
+    },
+    {
+      store: 391,
+      storeName: 'Kirkland',
+      day: 'Wednesday',
+      delivery: 'Today/Wednesday',
+      orderStatus: 'Friday this week',
+      icon: '🐕',
+      color: 'from-slate-500 to-slate-700',
+      borderColor: 'border-slate-500',
+      bgColor: 'bg-slate-50',
+      shouldOrder: true,
+      trackingUrl: 'https://cloud.samsara.com/o/61699/fleet/viewer/Os38SHWcaySntxK22jjh'
+    },
+    {
+      store: 23,
+      storeName: 'Bellevue',
+      day: 'Thursday',
+      delivery: 'Today/Thursday',
+      orderStatus: 'N/A - Do not write order',
+      icon: '🦦',
+      color: 'from-orange-500 to-red-600',
+      borderColor: 'border-orange-500',
+      bgColor: 'bg-orange-50',
+      shouldOrder: false,
+      trackingUrl: 'https://cloud.samsara.com/o/61699/fleet/viewer/koy3HAHV4BzpafkQ41dd'
+    },
+    {
+      store: 658,
+      storeName: 'Issaquah',
+      day: 'Thursday',
+      delivery: 'Last Friday/Load Already Thrown',
+      orderStatus: 'Today/Thursday',
+      icon: '🐱',
+      color: 'from-amber-500 to-orange-600',
+      borderColor: 'border-amber-500',
+      bgColor: 'bg-amber-50',
+      shouldOrder: true,
+      trackingUrl: null
+    }
+  ];
+
+  const getDayColor = (day) => {
+    const colors = {
+      'Monday': 'bg-blue-600',
+      'Tuesday': 'bg-emerald-600',
+      'Wednesday': 'bg-violet-600',
+      'Thursday': 'bg-rose-600',
+      'Friday': 'bg-indigo-600'
+    };
+    return colors[day] || 'bg-slate-600';
+  };
+
+  const uniqueStores = [...new Set(scheduleData.map(item => item.store))];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-5xl font-bold text-white mb-3">
+            Store Delivery Schedule
+          </h1>
+          <p className="text-xl text-slate-300">
+            Warehouse order picking deadlines and load delivery timing
+          </p>
+        </div>
+
+        {/* Store Legend */}
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700 p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+              <Filter size={24} />
+              Store Reference
+            </h2>
+            <span className="text-slate-400 text-sm">Click cards to filter by store</span>
+          </div>
+          <div className="flex gap-4 flex-wrap">
+            {uniqueStores.map(storeNum => {
+              const storeData = scheduleData.find(s => s.store === storeNum);
+              return (
+                <button
+                  key={storeNum}
+                  onClick={() => setSelectedStore(selectedStore === storeNum ? null : storeNum)}
+                  className={`flex items-center gap-3 px-5 py-3 rounded-lg transition-all ${
+                    selectedStore === storeNum 
+                      ? `bg-gradient-to-r ${storeData.color} text-white shadow-lg scale-105` 
+                      : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  <span className="text-3xl">{storeData.icon}</span>
+                  <div className="text-left">
+                    <div className="font-bold text-lg">{storeData.storeName}</div>
+                    <div className="text-sm opacity-80">Store #{storeNum}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Schedule Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {scheduleData.map((item, index) => (
+            <div
+              key={index}
+              className={`transform transition-all duration-200 ${
+                hoveredCard === index ? 'scale-105' : 'scale-100'
+              } ${
+                selectedStore === null || selectedStore === item.store ? 'opacity-100' : 'opacity-30'
+              }`}
+              onMouseEnter={() => setHoveredCard(index)}
+              onMouseLeave={() => setHoveredCard(null)}
+              onClick={() => setSelectedStore(selectedStore === item.store ? null : item.store)}
+            >
+              <div className={`bg-slate-800 rounded-xl shadow-xl border-2 ${item.borderColor} cursor-pointer hover:shadow-2xl overflow-hidden h-full`}>
+                {/* Store Header */}
+                <div className={`bg-gradient-to-r ${item.color} p-5 flex items-center justify-between`}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-5xl">{item.icon}</span>
+                    <div>
+                      <div className="text-white font-bold text-2xl">{item.storeName}</div>
+                      <div className="text-white/80 text-sm">Store #{item.store}</div>
+                    </div>
+                  </div>
+                  <div className={`${getDayColor(item.day)} text-white rounded-lg px-4 py-2 text-sm font-semibold flex items-center gap-2`}>
+                    <Calendar size={16} />
+                    {item.day}
+                  </div>
+                </div>
+
+                <div className="p-5 space-y-4">
+                  {/* Delivery Info */}
+                  <div className="bg-slate-700/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2 text-blue-400">
+                      <Truck size={18} />
+                      <span className="font-semibold text-sm uppercase tracking-wide">Load Delivers</span>
+                    </div>
+                    <div className="text-white font-medium ml-6">{item.delivery}</div>
+                  </div>
+
+                  {/* Tracking Link */}
+                  {item.trackingUrl && (
+                    <a
+                      href={item.trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-4 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Package size={18} />
+                          <span className="font-semibold text-sm uppercase tracking-wide">Track Delivery</span>
+                        </div>
+                        <span className="text-xl">→</span>
+                      </div>
+                    </a>
+                  )}
+
+                  {/* Order Status */}
+                  <div className={`rounded-lg p-4 ${item.shouldOrder ? 'bg-emerald-900/30 border border-emerald-700' : 'bg-rose-900/30 border border-rose-700'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      {item.shouldOrder ? (
+                        <CheckCircle className="text-emerald-400" size={18} />
+                      ) : (
+                        <XCircle className="text-rose-400" size={18} />
+                      )}
+                      <span className={`font-semibold text-sm uppercase tracking-wide ${item.shouldOrder ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        Order is Picked On
+                      </span>
+                    </div>
+                    <div className={`ml-6 font-medium ${item.shouldOrder ? 'text-emerald-300' : 'text-rose-300'}`}>
+                      {item.orderStatus}
+                    </div>
+                  </div>
+
+                  {/* Action Badge */}
+                  <div className={`rounded-lg px-4 py-3 text-center font-bold ${
+                    item.shouldOrder 
+                      ? 'bg-emerald-600 text-white' 
+                      : 'bg-rose-600 text-white'
+                  }`}>
+                    {item.shouldOrder ? '✓ Write Order' : '✗ Do Not Write Order'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer Stats */}
+        <div className="mt-10 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700 p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div>
+              <div className="text-3xl font-bold text-white">{scheduleData.length}</div>
+              <div className="text-slate-400">Total Schedules</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-emerald-400">{scheduleData.filter(s => s.shouldOrder).length}</div>
+              <div className="text-slate-400">Orders to Write</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-rose-400">{scheduleData.filter(s => !s.shouldOrder).length}</div>
+              <div className="text-slate-400">No Order Needed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AnimalSchedule;
